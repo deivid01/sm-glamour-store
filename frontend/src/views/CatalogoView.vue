@@ -11,7 +11,7 @@ const loading = ref(true)
 
 const fetchProducts = async () => {
   try {
-    const response = await axios.get('http://localhost:8000/api/produtos/')
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/produtos/`)
     allProducts.value = response.data.map(p => ({
       id: p.id,
       name: p.nome,
