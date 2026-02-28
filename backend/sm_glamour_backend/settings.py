@@ -149,7 +149,8 @@ STATICFILES_STORAGE = 'whitenoise.storage.CompressedManifestStaticFilesStorage'
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173",
     "http://127.0.0.1:5173",
-    "https://sm-glamour-store.vercel.app",  # Add Vercel domain later if needed
+    "https://sm-glamour-store-2zb9.vercel.app",
+    "https://sm-glamour-store.vercel.app",
 ]
 CORS_ALLOW_ALL_ORIGINS = True # Para a DEMO no Vercel não ter problemas
 
