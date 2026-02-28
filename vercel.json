@@ -12,7 +12,12 @@
     "routes": [
         {
             "src": "/(api|admin|static|media)(.*)",
-            "dest": "backend/sm_glamour_backend/wsgi.py"
+            "dest": "backend/sm_glamour_backend/wsgi.py",
+            "headers": {
+                "Access-Control-Allow-Origin": "*",
+                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
+                "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
+            }
         }
     ]
 }
