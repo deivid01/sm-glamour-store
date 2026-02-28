@@ -10,4 +10,36 @@ generator client {
 
 datasource db {
   provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model products_categoria {
+  id               BigInt             @id @default(autoincrement())
+  nome             String             @db.VarChar(100)
+  slug             String             @unique @db.VarChar(255)
+  produtos         products_produto[]
+}
+
+model products_produto {
+  id               BigInt             @id @default(autoincrement())
+  id_olist         String?            @unique @db.VarChar(255)
+  nome             String             @db.VarChar(200)
+  slug             String?            @unique @db.VarChar(255)
+  descricao        String
+  preco            Decimal            @db.Decimal(10, 2)
+  estoque          Int
+  categoria_id     BigInt
+  codigo_barras    String?            @db.VarChar(255)
+  imagem           String?            @db.VarChar(100)
+  imagem_url       String?            @db.VarChar(500)
+  peso_kg          Decimal            @db.Decimal(5, 3)
+  comprimento_cm   Decimal            @db.Decimal(5, 2)
+  altura_cm        Decimal            @db.Decimal(5, 2)
+  largura_cm       Decimal            @db.Decimal(5, 2)
+  criado_em        DateTime           @db.Timestamptz(6)
+  atualizado_em    DateTime           @db.Timestamptz(6)
+
+  products_categoria products_categoria @relation(fields: [categoria_id], references: [id], onDelete: Cascade)
+
+  @@index([categoria_id])
 }
