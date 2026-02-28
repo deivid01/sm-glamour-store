@@ -60,7 +60,7 @@ apiRouter.get('/produtos', async (req, res) => {
         });
 
         // Format to match Django's exact JSON structure
-        const formattedProdutos = produtos.map(p => ({
+        const formattedProdutos = produtos.map((p: any) => ({
             id: p.id,
             nome: p.nome,
             slug: p.slug,
