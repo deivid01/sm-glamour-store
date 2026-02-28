@@ -4,7 +4,7 @@ import requests
 
 class Categoria(models.Model):
     nome = models.CharField(max_length=100)
-    slug = models.SlugField(unique=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, blank=True)
 
     def save(self, *args, **kwargs):
         if not self.slug:
@@ -15,16 +15,16 @@ class Categoria(models.Model):
         return self.nome
 
 class Produto(models.Model):
-    id_olist = models.CharField(max_length=50, unique=True, blank=True, null=True, help_text="ID do produto no ERP Olist")
+    id_olist = models.CharField(max_length=255, unique=True, blank=True, null=True, help_text="ID do produto no ERP Olist")
     nome = models.CharField(max_length=200)
-    slug = models.SlugField(unique=True, null=True, blank=True)
+    slug = models.SlugField(max_length=255, unique=True, null=True, blank=True)
     descricao = models.TextField()
     preco = models.DecimalField(max_digits=10, decimal_places=2)
     estoque = models.PositiveIntegerField(default=0)
     categoria = models.ForeignKey(Categoria, related_name='produtos', on_delete=models.CASCADE)
     
     # Imagens e Códigos de Barras
-    codigo_barras = models.CharField(max_length=50, blank=True, null=True, help_text="EAN / GTIN do produto")
+    codigo_barras = models.CharField(max_length=255, blank=True, null=True, help_text="EAN / GTIN do produto")
     imagem = models.ImageField(upload_to='produtos/', blank=True, null=True, help_text="Upload direto do painel (Prioridade máxima)")
     imagem_url = models.URLField(max_length=500, blank=True, null=True, help_text="URL de fallback da API")
     
