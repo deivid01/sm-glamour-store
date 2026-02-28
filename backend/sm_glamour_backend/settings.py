@@ -153,12 +153,12 @@ MEDIA_URL = '/media/'
 MEDIA_ROOT = os.path.join(BASE_DIR, 'media')
 
 # Tiny API Settings
-TINY_TOKEN = env('TINY_TOKEN')
-TINY_API_URL = env('TINY_API_URL')
-TINY_PARCEIRO_ID = env('TINY_PARCEIRO_ID')
+TINY_TOKEN = env('TINY_TOKEN', default='')
+TINY_API_URL = env('TINY_API_URL', default='https://api.tiny.com.br/api2/')
+TINY_PARCEIRO_ID = env('TINY_PARCEIRO_ID', default='')
 
 # Melhor Envio Settings
 MELHOR_ENVIO_TOKEN = env('MELHOR_ENVIO_TOKEN', default='')
 MELHOR_ENVIO_URL = env('MELHOR_ENVIO_URL', default='https://sandbox.melhorenvio.com.br/api/v2/')
 CEP_ORIGEM = env('CEP_ORIGEM', default='01001000')
-TINY_SHIPPING_ENDPOINT = env('TINY_SHIPPING_ENDPOINT')
+TINY_SHIPPING_ENDPOINT = env('TINY_SHIPPING_ENDPOINT', default='')
