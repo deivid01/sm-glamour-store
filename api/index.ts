@@ -3,8 +3,15 @@ import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 
+let prisma: PrismaClient;
+try {
+    prisma = new PrismaClient();
+    console.log("Prisma Client instantiated successfully.");
+} catch (error) {
+    console.error("Critical: Prisma Failed to Start:", error);
+}
+
 const app = express();
-const prisma = new PrismaClient();
 const port = process.env.PORT || 8000;
 
 // Enable CORS explicitly for our Vite frontend and Vercel domains
@@ -219,4 +226,4 @@ if (process.env.NODE_ENV !== 'production') {
     });
 }
 
-export default app;
+module.exports = app;
