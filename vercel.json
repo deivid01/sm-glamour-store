@@ -7,22 +7,11 @@
             "config": {
                 "maxLambdaSize": "15mb"
             }
-        },
-        {
-            "src": "backend/build_files.sh",
-            "use": "@vercel/static-build",
-            "config": {
-                "distDir": "backend/staticfiles"
-            }
         }
     ],
     "routes": [
         {
-            "src": "/static/(.*)",
-            "dest": "/backend/staticfiles/$1"
-        },
-        {
-            "src": "/(api|admin)(.*)",
+            "src": "/(api|admin|static|media)(.*)",
             "dest": "backend/sm_glamour_backend/wsgi.py"
         }
     ]
