@@ -24,8 +24,10 @@ app.use(express.json());
 // Main API Router matches what Django did (/api)
 const apiRouter = express.Router();
 
+import { Request, Response } from 'express';
+
 // --- PRODUCTS ---
-apiRouter.get('/produtos', async (req, res) => {
+apiRouter.get('/produtos', async (req: Request, res: Response) => {
     try {
         const { search, categoria } = req.query;
         let whereClause = {};
@@ -90,7 +92,7 @@ apiRouter.get('/produtos', async (req, res) => {
     }
 });
 
-apiRouter.get('/produtos/:slug', async (req, res) => {
+apiRouter.get('/produtos/:slug', async (req: Request, res: Response) => {
     try {
         const produto = await prisma.products_produto.findUnique({
             where: { slug: req.params.slug },
@@ -132,7 +134,7 @@ apiRouter.get('/produtos/:slug', async (req, res) => {
 });
 
 // --- CATEGORIAS ---
-apiRouter.get('/categorias', async (req, res) => {
+apiRouter.get('/categorias', async (req: Request, res: Response) => {
     try {
         const categorias = await prisma.products_categoria.findMany({
             orderBy: { nome: 'asc' }
@@ -144,7 +146,7 @@ apiRouter.get('/categorias', async (req, res) => {
     }
 });
 
-apiRouter.get('/categorias/:slug', async (req, res) => {
+apiRouter.get('/categorias/:slug', async (req: Request, res: Response) => {
     try {
         const categoria = await prisma.products_categoria.findUnique({
             where: { slug: req.params.slug }
@@ -161,7 +163,7 @@ apiRouter.get('/categorias/:slug', async (req, res) => {
 });
 
 // --- SHIPPING / MELHOR ENVIO ---
-apiRouter.post('/integrations/shipping/calculate', async (req, res) => {
+apiRouter.post('/integrations/shipping/calculate', async (req: Request, res: Response) => {
     try {
         const { to_postal_code, products } = req.body;
 
@@ -206,7 +208,7 @@ apiRouter.post('/integrations/shipping/calculate', async (req, res) => {
 app.use('/api', apiRouter);
 
 // Basic health check for Vercel
-app.get('/', (req, res) => {
+app.get('/', (req: Request, res: Response) => {
     res.json({ status: 'ok', engine: 'node-express', time: new Date().toISOString() });
 });
 
