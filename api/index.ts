@@ -169,43 +169,37 @@ apiRouter.post('/integrations/shipping/calculate', async (req, res) => {
             return res.status(400).json({ detail: "CEP de destino e lista de produtos (peso, dimensões) são obrigatórios." });
         }
 
-        const token = process.env.MELHOR_ENVIO_TOKEN;
-        const api_url = process.env.MELHOR_ENVIO_URL || 'https://sandbox.melhorenvio.com.br/api/v2/';
-        const cep_origem = process.env.CEP_ORIGEM || '01001000';
+        // Mock Melhor Envio response with standard Correios Options for the Demo
+        const mockResponse = [
+            {
+                id: 1,
+                name: "Correios PAC (Demo)",
+                price: "25.50",
+                custom_price: "25.50",
+                discount: "0.00",
+                currency: "R$",
+                delivery_time: 7,
+                custom_delivery_time: 7,
+                error: null
+            },
+            {
+                id: 2,
+                name: "Correios SEDEX (Demo)",
+                price: "42.90",
+                custom_price: "42.90",
+                discount: "0.00",
+                currency: "R$",
+                delivery_time: 3,
+                custom_delivery_time: 3,
+                error: null
+            }
+        ];
 
-        if (!token) {
-            return res.status(500).json({ detail: "Melhor Envio token server configuration missing" });
-        }
-
-        // Prepare Melhor Envio payload matching Django format
-        const payload = {
-            from: { postal_code: cep_origem },
-            to: { postal_code: to_postal_code },
-            products: products.map((p: any) => ({
-                id: p.id || 'x',
-                weight: parseFloat(p.peso_kg || 0) || 0.3,
-                width: parseFloat(p.largura_cm || 0) || 15.0,
-                height: parseFloat(p.altura_cm || 0) || 10.0,
-                length: parseFloat(p.comprimento_cm || 0) || 20.0,
-                insurance_value: 0.0,
-                quantity: p.quantidade || 1
-            }))
-        };
-
-        const headers = {
-            'Accept': 'application/json',
-            'Content-Type': 'application/json',
-            'Authorization': `Bearer ${token}`,
-            'User-Agent': 'SM Glamour Store Integration'
-        };
-
-        const response = await axios.post(`${api_url}me/shipment/calculate`, payload, { headers });
-
-        // Return exactly what Django returned
-        res.json(response.data);
+        // Return the simulated data
+        res.json(mockResponse);
     } catch (error: any) {
-        console.error('Error calculating shipping:', error?.response?.data || error.message);
-        res.status(500).json({ detail: 'Integration Error', error: error?.response?.data || error.message });
+        console.error('Error calculating shipping:', error);
+        res.status(500).json({ detail: 'Error simulating shipping calculation' });
     }
 });
 
