@@ -1,0 +1,23 @@
+# Node/Frontend
+node_modules/
+dist/
+dist-ssr/
+*.local
+.env
+.env.*
+
+# Python/Django/Backend
+venv/
+__pycache__/
+*.py[cod]
+*$py.class
+*.sqlite3
+db.sqlite3
+media/
+backend/.env
+
+# IDEs and OS
+.vscode/
+.idea/
+*.DS_Store
+Thumbs.db
