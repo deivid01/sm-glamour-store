@@ -10,7 +10,7 @@ const loading = ref(true)
 
 onMounted(async () => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/produtos/`)
+    const response = await axios.get('/api/produtos/')
     // Pega os primeiros 4 produtos reais como destaque
     featuredProducts.value = response.data.slice(0, 4).map(p => ({
       id: p.id,

@@ -14,10 +14,12 @@ const activeImage = ref('')
 const cep = ref('')
 const shippingOptions = ref([])
 const loadingShipping = ref(false)
+const shippingError = ref('') // Added this line as per the provided code edit
+const postalCode = ref('') // Added this line as per the provided code edit
 
 const fetchProduct = async () => {
   try {
-    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/produtos/${route.params.slug}/`)
+    const response = await axios.get(`/api/produtos/${route.params.slug}/`)
     product.value = {
       id: response.data.id,
       name: response.data.nome,
@@ -40,16 +42,18 @@ const fetchProduct = async () => {
 }
 
 const calculateShipping = async () => {
-  if (cep.value.length < 8) return
+  if (!postalCode.value || postalCode.value.length < 8) return
   loadingShipping.value = true
+  shippingError.value = '' // Added this line as per the provided code edit
   try {
-    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/integrations/shipping/calculate/`, {
+    const response = await axios.post('/api/integrations/shipping/calculate/', {
       cep: cep.value,
       produtos: [{ id: product.value.id, quantidade: quantity.value }]
     })
     shippingOptions.value = response.data
   } catch (error) {
     console.error('Erro ao calcular frete:', error)
+    shippingError.value = 'Erro ao calcular frete. Verifique o CEP.' // Added this line as per the provided code edit
   } finally {
     loadingShipping.value = false
   }

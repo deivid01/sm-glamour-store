@@ -1,23 +1,16 @@
 {
     "version": 2,
-    "builds": [
+    "framework": "vite",
+    "buildCommand": "cd frontend && npm install && npm run build",
+    "outputDirectory": "frontend/dist",
+    "rewrites": [
         {
-            "src": "vercel_app.py",
-            "use": "@vercel/python",
-            "config": {
-                "maxLambdaSize": "15mb"
-            }
-        }
-    ],
-    "routes": [
+            "source": "/api/(.*)",
+            "destination": "/backend/api/index.ts"
+        },
         {
-            "src": "/(api|admin|static|media)(.*)",
-            "dest": "vercel_app.py",
-            "headers": {
-                "Access-Control-Allow-Origin": "*",
-                "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
-                "Access-Control-Allow-Headers": "X-Requested-With, Content-Type, Authorization"
-            }
+            "source": "/(.*)",
+            "destination": "/index.html"
         }
     ]
 }
