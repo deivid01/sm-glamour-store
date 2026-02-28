@@ -5,21 +5,24 @@
             "src": "backend/sm_glamour_backend/wsgi.py",
             "use": "@vercel/python",
             "config": {
-                "maxLambdaSize": "15mb",
-                "runtime": "python3.9"
+                "maxLambdaSize": "15mb"
             }
         },
         {
             "src": "backend/build_files.sh",
             "use": "@vercel/static-build",
             "config": {
-                "distDir": "staticfiles"
+                "distDir": "backend/staticfiles"
             }
         }
     ],
     "routes": [
         {
-            "src": "/(?:api|admin|media|static)/(.*)",
+            "src": "/static/(.*)",
+            "dest": "/backend/staticfiles/$1"
+        },
+        {
+            "src": "/(api|admin)(.*)",
             "dest": "backend/sm_glamour_backend/wsgi.py"
         }
     ]

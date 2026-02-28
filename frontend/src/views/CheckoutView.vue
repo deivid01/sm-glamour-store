@@ -25,7 +25,7 @@ const calculateShipping = async () => {
     if (form.value.cep.length < 8) return
     loadingShipping.value = true
     try {
-        const response = await axios.post('http://localhost:8000/api/integrations/shipping/calculate/', {
+        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/integrations/shipping/calculate/`, {
             cep: form.value.cep,
             produtos: cartStore.items.map(i => ({ id: i.id, quantidade: i.quantity }))
         })

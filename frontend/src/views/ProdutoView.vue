@@ -17,7 +17,7 @@ const loadingShipping = ref(false)
 
 const fetchProduct = async () => {
   try {
-    const response = await axios.get(`http://localhost:8000/api/produtos/${route.params.slug}/`)
+    const response = await axios.get(`${import.meta.env.VITE_API_BASE_URL}/api/produtos/${route.params.slug}/`)
     product.value = {
       id: response.data.id,
       name: response.data.nome,
@@ -43,7 +43,7 @@ const calculateShipping = async () => {
   if (cep.value.length < 8) return
   loadingShipping.value = true
   try {
-    const response = await axios.post('http://localhost:8000/api/integrations/shipping/calculate/', {
+    const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/integrations/shipping/calculate/`, {
       cep: cep.value,
       produtos: [{ id: product.value.id, quantidade: quantity.value }]
     })
