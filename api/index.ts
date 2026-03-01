@@ -2,6 +2,7 @@
 import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
+import path from 'path';
 import type { Request, Response } from 'express';
 
 type AnyRecord = Record<string, unknown>;
@@ -705,20 +706,19 @@ apiRouter.post('/integrations/shipping/calculate', async (req: Request, res: Res
 
 app.use('/api', apiRouter);
 
-app.get('/', (_req: Request, res: Response) => {
-    res.json({
-        status: 'ok',
-        engine: 'node-express',
-        database_configured: Boolean(chosenDatabaseUrl),
-        olist_configured: hasOlistConfig,
-        time: new Date().toISOString()
-    });
+// --- RENDER.COM STATIC FRONTEND ---
+// Serve the compiled Vite Vue.js application
+const frontendDist = path.join(process.cwd(), 'dist');
+app.use(express.static(frontendDist));
+
+// Catch-all route to serve index.html for Vue Router (History Mode)
+app.get('*', (req: Request, res: Response) => {
+    res.sendFile(path.join(frontendDist, 'index.html'));
 });
 
-if (process.env.NODE_ENV !== 'production') {
-    app.listen(port, () => {
-        console.log(`SM Glamour Node.js Backend is running on http://localhost:${port}`);
-    });
-}
+// Render passes the PORT environment variable dynamically
+app.listen(port, () => {
+    console.log(`SM Glamour Monorepo (Node.js + Vue) is running on port ${port}`);
+});
 
 export default app;

@@ -1,0 +1,15 @@
+services:
+  - type: web
+    name: sm-glamour-store
+    env: node
+    plan: free
+    buildCommand: npm run build
+    startCommand: npm start
+    autoDeploy: true
+    envVars:
+      - key: DATABASE_URL
+        sync: false
+      - key: TINY_TOKEN
+        sync: false
+      - key: NODE_VERSION
+        value: "20.x"
