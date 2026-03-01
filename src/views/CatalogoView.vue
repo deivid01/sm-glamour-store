@@ -16,7 +16,7 @@ const fetchProducts = async () => {
       id: p.id,
       name: p.nome,
       slug: p.slug,
-      category: p.categoria_nome,
+      category: p.categoria?.nome || p.categoria_nome || 'Sem categoria',
       price: parseFloat(p.preco),
       image: p.imagem_url || '/images/product_fallback.png',
       isNew: false // Poderia ser derivado da data de criação

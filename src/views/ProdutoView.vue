@@ -23,7 +23,7 @@ const fetchProduct = async () => {
     product.value = {
       id: response.data.id,
       name: response.data.nome,
-      category: response.data.categoria_nome,
+      category: response.data.categoria?.nome || response.data.categoria_nome || 'Sem categoria',
       price: parseFloat(response.data.preco),
       description: response.data.descricao,
       image: response.data.imagem_url || 'https://images.unsplash.com/photo-1620916566398-39f1143ab7be?auto=format&fit=crop&w=1200&q=80',
