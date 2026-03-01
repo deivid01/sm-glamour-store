@@ -547,6 +547,54 @@ apiRouter.post('/integrations/olist/sync', async (req: Request, res: Response) =
     }
 });
 
+// --- DESTAQUES (Bestsellers curated by admin) ---
+apiRouter.get('/produtos/destaques', async (_req: Request, res: Response) => {
+    try {
+        // First try products marked as destaque
+        let destaques = await prisma.products_produto.findMany({
+            where: { destaque: true },
+            include: { products_categoria: true },
+            orderBy: { atualizado_em: 'desc' },
+            take: 10
+        });
+
+        // Fallback: if none marked, return top-stocked products
+        if (destaques.length === 0) {
+            destaques = await prisma.products_produto.findMany({
+                include: { products_categoria: true },
+                orderBy: { estoque: 'desc' },
+                take: 8
+            });
+        }
+
+        res.json(destaques.map(formatProduto));
+    } catch (error) {
+        console.error('Error fetching destaques:', error);
+        const detail = getDatabaseErrorDetail(error);
+        if (detail) return res.status(503).json({ detail });
+        res.status(500).json({ detail: 'Internal server error' });
+    }
+});
+
+// PATCH /api/admin/produtos/:id/destaque — toggle bestseller flag
+apiRouter.patch('/admin/produtos/:id/destaque', async (req: Request, res: Response) => {
+    try {
+        const id = BigInt(String(req.params.id));
+        const body = (req.body ?? {}) as { destaque?: boolean };
+        const destaque = typeof body.destaque === 'boolean' ? body.destaque : true;
+
+        const updated = await prisma.products_produto.update({
+            where: { id },
+            data: { destaque }
+        });
+
+        res.json({ success: true, destaque: updated.destaque });
+    } catch (error) {
+        console.error('Error toggling destaque:', error);
+        res.status(500).json({ detail: 'Erro ao atualizar destaque.' });
+    }
+});
+
 // --- PRODUCTS ---
 apiRouter.get('/produtos', async (req: Request, res: Response) => {
     try {

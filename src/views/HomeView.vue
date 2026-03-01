@@ -4,26 +4,36 @@ import axios from 'axios'
 import ProductCard from '../components/ProductCard.vue'
 
 const featuredProducts = ref([])
+const bestsellers = ref([])
 const loading = ref(true)
+const loadingBestsellers = ref(true)
+
+const mapProduct = (p) => ({
+  id: p.id,
+  name: p.nome,
+  slug: p.slug,
+  category: p.categoria?.nome || p.categoria_nome || 'Sem categoria',
+  price: parseFloat(p.preco),
+  image: p.imagem_url || '/images/product_fallback.png',
+  isNew: false
+})
 
 onMounted(async () => {
-  try {
-    const response = await axios.get('/api/produtos/')
-    // Pega os primeiros 4 produtos reais como destaque
-    featuredProducts.value = response.data.slice(0, 4).map(p => ({
-      id: p.id,
-      name: p.nome,
-      slug: p.slug,
-      category: p.categoria?.nome || p.categoria_nome || 'Sem categoria',
-      price: parseFloat(p.preco),
-      image: p.imagem_url || '/images/product_fallback.png',
-      isNew: false
-    }))
-  } catch (error) {
-    console.error('Erro loading home products:', error)
-  } finally {
-    loading.value = false
+  // Load featured (first 4) and bestsellers in parallel
+  const [featuredRes, bestsellersRes] = await Promise.allSettled([
+    axios.get('/api/produtos/'),
+    axios.get('/api/produtos/destaques')
+  ])
+
+  if (featuredRes.status === 'fulfilled') {
+    featuredProducts.value = featuredRes.value.data.slice(0, 4).map(mapProduct)
   }
+  loading.value = false
+
+  if (bestsellersRes.status === 'fulfilled') {
+    bestsellers.value = bestsellersRes.value.data.slice(0, 10).map(mapProduct)
+  }
+  loadingBestsellers.value = false
 })
 </script>
 
@@ -117,6 +127,55 @@ onMounted(async () => {
          <a href="/catalogo" class="inline-block border border-black dark:border-stone-400 text-stone-900 dark:text-stone-300 px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-black dark:hover:bg-glamour-primary hover:text-white transition-colors">
           Ver Coleção Completa
         </a>
+      </div>
+    </section>
+
+    <!-- MAIS VENDIDOS / DESTAQUES -->
+    <section class="py-20 px-4 bg-stone-100/70 dark:bg-[#0d0820] transition-colors duration-300">
+      <div class="max-w-7xl mx-auto">
+        <div class="flex justify-between items-end mb-12">
+          <div>
+            <span class="text-[10px] uppercase tracking-[0.3em] text-glamour-primary font-bold block mb-3">⭐ Curadoria da Stéphanie</span>
+            <h2 class="text-3xl md:text-5xl font-serif font-light text-stone-900 dark:text-stone-100">Mais Vendidos</h2>
+            <p class="text-stone-500 dark:text-stone-400 text-sm font-light tracking-wide mt-2">Os produtos favoritos das nossas clientes.</p>
+          </div>
+          <a href="/catalogo" class="hidden md:inline-block border-b border-stone-400 dark:border-stone-500 text-stone-700 dark:text-stone-300 text-xs font-bold uppercase tracking-widest pb-1 hover:text-glamour-primary hover:border-glamour-primary transition-colors">
+            Ver Todos
+          </a>
+        </div>
+
+        <!-- Loading skeleton -->
+        <div v-if="loadingBestsellers" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-6">
+          <div v-for="i in 5" :key="i" class="h-[340px] bg-stone-200 dark:bg-stone-800/50 animate-pulse rounded-2xl"></div>
+        </div>
+
+        <!-- Products grid — up to 10 items, 5 columns on large screens -->
+        <div v-else-if="bestsellers.length > 0" class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-x-6 gap-y-10">
+          <a v-for="product in bestsellers" :key="product.id" :href="`/produto/${product.slug}`"
+            class="group flex flex-col rounded-2xl overflow-hidden bg-white dark:bg-[#1a0a2e] border border-transparent hover:border-glamour-primary/30 shadow-sm hover:shadow-xl transition-all duration-300">
+            <div class="relative aspect-square overflow-hidden bg-stone-100 dark:bg-stone-800">
+              <img :src="product.image" :alt="product.name"
+                class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500"
+                @error="(e) => e.target.src = '/images/product_fallback.png'"
+              />
+              <div class="absolute top-2 left-2 bg-glamour-primary text-white text-[9px] font-bold uppercase tracking-widest px-2 py-0.5 rounded-full">
+                ⭐ Destaque
+              </div>
+            </div>
+            <div class="p-4 flex flex-col gap-1">
+              <p class="text-[10px] uppercase tracking-widest text-glamour-gold font-semibold">{{ product.category }}</p>
+              <h3 class="text-sm font-semibold text-stone-900 dark:text-stone-100 line-clamp-2 leading-snug">{{ product.name }}</h3>
+              <p class="text-glamour-primary font-bold text-base mt-1">R$ {{ product.price.toFixed(2) }}</p>
+            </div>
+          </a>
+        </div>
+
+        <!-- Empty state: no destaques yet -->
+        <div v-else class="text-center py-12 text-stone-400 dark:text-stone-600">
+          <p class="text-3xl mb-3">☆</p>
+          <p class="text-sm">Nenhum produto marcado como destaque ainda.</p>
+          <p class="text-xs mt-1">Acesse o <a href="/admin" class="text-glamour-primary underline">painel admin</a> para selecionar os mais vendidos.</p>
+        </div>
       </div>
     </section>
 

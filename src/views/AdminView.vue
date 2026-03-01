@@ -30,17 +30,21 @@
 
     <!-- PRODUCTS TABLE -->
     <div class="admin-section">
-      <h2>📦 Produtos ({{ produtos.length }})</h2>
+      <h2>📦 Produtos ({{ produtos.length }}) — <span class="destaque-count">⭐ {{ destaqueCount }} em destaque</span></h2>
+      <p class="hint">Clique em ⭐ para marcar/desmarcar produtos como "Mais Vendidos" na Home.</p>
       <input v-model="search" type="text" placeholder="🔍 Filtrar por nome..." class="admin-input full-width" />
 
       <div class="products-grid">
-        <div v-for="produto in filteredProdutos" :key="produto.id" class="product-card">
+        <div v-for="produto in filteredProdutos" :key="produto.id" class="product-card" :class="{ 'is-destaque': produto.destaque }">
           <div class="product-img-wrapper">
             <img
               :src="produto.imagem_url || '/images/product_fallback.png'"
               :alt="produto.nome"
               class="product-thumb"
             />
+            <button @click="toggleDestaque(produto)" class="destaque-btn" :title="produto.destaque ? 'Remover dos destaques' : 'Marcar como destaque'">
+              {{ produto.destaque ? '⭐' : '☆' }}
+            </button>
           </div>
           <div class="product-info">
             <p class="product-name">{{ produto.nome }}</p>
@@ -87,6 +91,8 @@ const filteredProdutos = computed(() => {
   const q = search.value.toLowerCase()
   return produtos.value.filter(p => p.nome.toLowerCase().includes(q))
 })
+
+const destaqueCount = computed(() => produtos.value.filter(p => p.destaque).length)
 
 const loadProdutos = async () => {
   try {
@@ -135,6 +141,16 @@ const uploadImage = async (event, produtoId) => {
   }
 }
 
+const toggleDestaque = async (produto) => {
+  const newValue = !produto.destaque
+  try {
+    await axios.patch(`${API}/admin/produtos/${produto.id}/destaque`, { destaque: newValue })
+    produto.destaque = newValue
+  } catch (err) {
+    console.error('Erro ao alterar destaque:', err)
+  }
+}
+
 onMounted(loadProdutos)
 </script>
 
@@ -145,7 +161,9 @@ onMounted(loadProdutos)
 .admin-header h1 { font-size: 1.8rem; margin: 0 0 .5rem; color: #e9d5ff; }
 .admin-header p { color: #a78bfa; margin: 0; }
 .admin-section { max-width: 1200px; margin: 2rem auto; padding: 0 1.5rem; }
-.admin-section h2 { font-size: 1.3rem; color: #c4b5fd; margin-bottom: 1rem; border-bottom: 1px solid #2d2d3d; padding-bottom: .5rem; }
+.admin-section h2 { font-size: 1.3rem; color: #c4b5fd; margin-bottom: .5rem; border-bottom: 1px solid #2d2d3d; padding-bottom: .5rem; }
+.destaque-count { color: #f9d671; font-size: 1rem; font-weight: normal; }
+.hint { color: #6b7280; font-size: .85rem; margin-bottom: 1rem; }
 .sync-controls { display: flex; gap: 1rem; flex-wrap: wrap; align-items: center; margin-bottom: 1rem; }
 .admin-input { background: #1a1a2e; border: 1px solid #3d3d5c; color: #eee; padding: .6rem 1rem; border-radius: 8px; font-size: .95rem; outline: none; }
 .admin-input:focus { border-color: #7c3aed; }
@@ -157,9 +175,12 @@ onMounted(loadProdutos)
 .sync-result.success { background: #0f2e1f; border: 1px solid #22c55e; color: #86efac; }
 .sync-result.error { background: #2e0f0f; border: 1px solid #ef4444; color: #fca5a5; }
 .products-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 1.2rem; }
-.product-card { background: #16162a; border: 1px solid #2d2d4a; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; }
-.product-img-wrapper { height: 160px; overflow: hidden; background: #0d0d20; }
+.product-card { background: #16162a; border: 1px solid #2d2d4a; border-radius: 12px; overflow: hidden; display: flex; flex-direction: column; transition: border-color .2s; }
+.product-card.is-destaque { border-color: #f9d671; box-shadow: 0 0 12px rgba(249,214,113,0.15); }
+.product-img-wrapper { height: 160px; overflow: hidden; background: #0d0d20; position: relative; }
 .product-thumb { width: 100%; height: 100%; object-fit: cover; }
+.destaque-btn { position: absolute; top: .5rem; right: .5rem; background: rgba(0,0,0,.5); border: none; border-radius: 50%; width: 32px; height: 32px; font-size: 1rem; cursor: pointer; backdrop-filter: blur(4px); transition: transform .2s; }
+.destaque-btn:hover { transform: scale(1.2); }
 .product-info { padding: .8rem 1rem; flex: 1; }
 .product-name { font-size: .9rem; font-weight: 600; margin: 0 0 .25rem; color: #e2e8f0; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
 .product-price { color: #a78bfa; font-size: .95rem; margin: 0 0 .2rem; }

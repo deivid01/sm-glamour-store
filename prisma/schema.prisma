@@ -38,6 +38,7 @@ model products_produto {
   largura_cm     Decimal  @db.Decimal(5, 2)
   criado_em      DateTime @db.Timestamptz(6)
   atualizado_em  DateTime @db.Timestamptz(6)
+  destaque       Boolean  @default(false)
 
   products_categoria products_categoria @relation(fields: [categoria_id], references: [id], onDelete: Cascade)
 
