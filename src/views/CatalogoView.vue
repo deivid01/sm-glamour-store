@@ -46,14 +46,14 @@ const filteredProducts = computed(() => {
 </script>
 
 <template>
-  <div class="bg-stone-50 min-h-screen py-16">
+  <div class="bg-stone-50 dark:bg-[#0F0A1E] min-h-screen py-16 transition-colors duration-300">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <!-- Breadcrumb & Header -->
       <div class="mb-12 border-b border-glamour-soft pb-8">
         <h1 class="text-4xl md:text-5xl font-serif text-stone-900 mb-4 tracking-wide">
           Catálogo <span class="text-glamour-primary italic font-light">Completo</span>
         </h1>
-        <p class="text-stone-600 font-light max-w-2xl text-lg">
+        <p class="text-stone-600 dark:text-stone-400 font-light max-w-2xl text-lg">
           Produtos reais sincronizados diretamente da nossa curadoria.
         </p>
       </div>
@@ -73,7 +73,7 @@ const filteredProducts = computed(() => {
               v-model="searchQuery"
               type="text" 
               placeholder="Buscar produtos..." 
-              class="w-full bg-white border border-glamour-soft/50 rounded-full px-5 py-3 pl-12 focus:outline-none focus:border-glamour-primary focus:ring-1 focus:ring-glamour-primary transition-all shadow-sm"
+              class="w-full bg-white dark:bg-[#1a0a2e] border border-glamour-soft/50 dark:border-purple-900/50 text-stone-900 dark:text-stone-100 rounded-full px-5 py-3 pl-12 focus:outline-none focus:border-glamour-primary focus:ring-1 focus:ring-glamour-primary transition-all shadow-sm placeholder:text-stone-400 dark:placeholder:text-stone-500"
             >
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" class="w-5 h-5 absolute left-4 top-1/2 -translate-y-1/2 text-stone-400">
               <path stroke-linecap="round" stroke-linejoin="round" d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 5.196a7.5 7.5 0 0010.607 10.607z" />
@@ -108,7 +108,7 @@ const filteredProducts = computed(() => {
         </div>
         
         <!-- Empty State -->
-        <div v-else class="text-center py-20 bg-white rounded-3xl border border-glamour-soft/30 shadow-sm">
+        <div v-else class="text-center py-20 bg-white dark:bg-[#1a0a2e] rounded-3xl border border-glamour-soft/30 dark:border-purple-900/30 shadow-sm">
           <div class="w-20 h-20 bg-glamour-soft rounded-full flex items-center justify-center mx-auto mb-6 text-glamour-primary">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-10 h-10">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 15.75l-2.489-2.489m0 0a3.375 3.375 0 10-4.773-4.773 3.375 3.375 0 004.774 4.774zM21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

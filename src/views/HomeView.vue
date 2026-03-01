@@ -28,7 +28,7 @@ onMounted(async () => {
 </script>
 
 <template>
-  <div class="bg-[#FAF9F6] text-stone-900 overflow-hidden font-sans">
+  <div class="bg-[#FAF9F6] dark:bg-[#0F0A1E] text-stone-900 dark:text-stone-100 overflow-hidden font-sans transition-colors duration-300">
     
     <!-- Hero Section (Minimalist & Edge-to-Edge) -->
     <section class="relative h-[85vh] w-full flex items-center justify-center">
@@ -49,25 +49,25 @@ onMounted(async () => {
     </section>
 
     <!-- Category Pills (Modern e-commerce) -->
-    <section class="py-20 px-4 max-w-7xl mx-auto">
+    <section class="py-20 px-4 max-w-7xl mx-auto bg-[#FAF9F6] dark:bg-[#0F0A1E] transition-colors">
       <div class="flex flex-nowrap overflow-x-auto gap-6 md:gap-12 hide-scrollbar snap-x pb-4 justify-start md:justify-center">
         <!-- Cat 1 -->
         <a href="/catalogo" class="flex flex-col items-center gap-4 group snap-center min-w-[100px] md:min-w-[120px]">
-          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-stone-200 p-1 group-hover:border-black transition-colors duration-500 bg-white">
+          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-stone-200 dark:border-purple-900/50 p-1 group-hover:border-black dark:group-hover:border-glamour-primary transition-colors duration-500 bg-white dark:bg-[#1a0a2e]">
             <div class="w-full h-full rounded-full overflow-hidden">
                <img src="/images/skincare.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Skincare" />
             </div>
           </div>
-          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-600 group-hover:text-black transition-colors">Skincare</span>
+          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-600 dark:text-stone-300 group-hover:text-black dark:group-hover:text-glamour-primary transition-colors">Skincare</span>
         </a>
         <!-- Cat 2 -->
         <a href="/catalogo" class="flex flex-col items-center gap-4 group snap-center min-w-[100px] md:min-w-[120px]">
-          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-stone-200 p-1 group-hover:border-black transition-colors duration-500 bg-white">
+          <div class="w-24 h-24 md:w-32 md:h-32 rounded-full overflow-hidden border border-stone-200 dark:border-purple-900/50 p-1 group-hover:border-black dark:group-hover:border-glamour-primary transition-colors duration-500 bg-white dark:bg-[#1a0a2e]">
             <div class="w-full h-full rounded-full overflow-hidden">
                <img src="https://images.unsplash.com/photo-1594035910387-fea47794261f?auto=format&fit=crop&q=80&w=500" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Perfumes" />
             </div>
           </div>
-          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-600 group-hover:text-black transition-colors">Perfumes</span>
+          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-600 dark:text-stone-300 group-hover:text-black dark:group-hover:text-glamour-primary transition-colors">Perfumes</span>
         </a>
         <!-- Cat 3 -->
         <a href="/catalogo" class="flex flex-col items-center gap-4 group snap-center min-w-[100px] md:min-w-[120px]">
@@ -76,7 +76,7 @@ onMounted(async () => {
                <img src="/images/makeup.png" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700" alt="Make" />
             </div>
           </div>
-          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-600 group-hover:text-black transition-colors">Maquiagem</span>
+          <span class="text-[10px] md:text-xs font-bold uppercase tracking-widest text-stone-600 dark:text-stone-300 group-hover:text-black dark:group-hover:text-glamour-primary transition-colors">Maquiagem</span>
         </a>
         <!-- Cat 4 -->
         <a href="/catalogo" class="flex flex-col items-center gap-4 group snap-center min-w-[100px] md:min-w-[120px]">
@@ -103,7 +103,7 @@ onMounted(async () => {
       </div>
 
       <div v-if="loading" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
-        <div v-for="i in 4" :key="i" class="h-[450px] bg-stone-200 animate-pulse rounded-2xl"></div>
+        <div v-for="i in 4" :key="i" class="h-[450px] bg-stone-200 dark:bg-stone-800/50 animate-pulse rounded-2xl"></div>
       </div>
       <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-x-8 gap-y-12">
         <ProductCard 
@@ -114,7 +114,7 @@ onMounted(async () => {
       </div>
       
       <div class="mt-16 text-center md:hidden">
-         <a href="/catalogo" class="inline-block border border-black px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-black hover:text-white transition-colors">
+         <a href="/catalogo" class="inline-block border border-black dark:border-stone-400 text-stone-900 dark:text-stone-300 px-10 py-4 text-xs font-bold uppercase tracking-widest hover:bg-black dark:hover:bg-glamour-primary hover:text-white transition-colors">
           Ver Coleção Completa
         </a>
       </div>
@@ -142,15 +142,15 @@ onMounted(async () => {
     </section>
 
     <!-- As Seen On (Logos) -->
-    <section class="py-20 border-t border-stone-200/50 bg-[#FAF9F6]">
+    <section class="py-20 border-t border-stone-200/50 dark:border-purple-900/20 bg-[#FAF9F6] dark:bg-[#0F0A1E] transition-colors">
       <div class="max-w-7xl mx-auto px-4 text-center">
-        <span class="text-[10px] uppercase tracking-[0.3em] text-stone-400 font-bold mb-12 block">A Excelência das Grandes Marcas</span>
-        <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 grayscale hover:grayscale-0 transition-all duration-700">
-           <h3 class="text-2xl font-serif tracking-[0.2em] text-stone-900">DIOR</h3>
-           <h3 class="text-2xl font-serif italic text-stone-900">CHANEL</h3>
-           <h3 class="text-2xl font-serif font-bold tracking-widest text-stone-900">EUDORA</h3>
-           <h3 class="text-2xl font-serif tracking-widest text-stone-900">LANCÔME</h3>
-           <h3 class="text-2xl font-serif tracking-[0.2em] text-stone-900">O BOTICÁRIO</h3>
+        <span class="text-[10px] uppercase tracking-[0.3em] text-stone-400 dark:text-stone-500 font-bold mb-12 block">A Excelência das Grandes Marcas</span>
+        <div class="flex flex-wrap justify-center items-center gap-12 md:gap-24 opacity-50 dark:opacity-30 grayscale hover:grayscale-0 hover:opacity-100 transition-all duration-700">
+           <h3 class="text-2xl font-serif tracking-[0.2em] text-stone-900 dark:text-stone-100">DIOR</h3>
+           <h3 class="text-2xl font-serif italic text-stone-900 dark:text-stone-100">CHANEL</h3>
+           <h3 class="text-2xl font-serif font-bold tracking-widest text-stone-900 dark:text-stone-100">EUDORA</h3>
+           <h3 class="text-2xl font-serif tracking-widest text-stone-900 dark:text-stone-100">LANCÔME</h3>
+           <h3 class="text-2xl font-serif tracking-[0.2em] text-stone-900 dark:text-stone-100">O BOTICÁRIO</h3>
         </div>
       </div>
     </section>

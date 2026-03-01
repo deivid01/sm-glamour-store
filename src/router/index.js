@@ -5,6 +5,7 @@ import ProdutoView from '../views/ProdutoView.vue'
 import CheckoutView from '../views/CheckoutView.vue'
 import SobreView from '../views/SobreView.vue'
 import AdminView from '../views/AdminView.vue'
+import AdminLoginView from '../views/AdminLoginView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -40,10 +41,16 @@ const router = createRouter({
             meta: { title: 'Sobre Nós | SM Glamour Store' }
         },
         {
+            path: '/admin/login',
+            name: 'admin-login',
+            component: AdminLoginView,
+            meta: { title: 'Entrar | SM Glamour Admin' }
+        },
+        {
             path: '/admin',
             name: 'admin',
             component: AdminView,
-            meta: { title: 'Painel Admin | SM Glamour Store' }
+            meta: { title: 'Painel Admin | SM Glamour Store', requiresAdmin: true }
         }
     ],
     scrollBehavior(to, from, savedPosition) {
@@ -58,8 +65,16 @@ const router = createRouter({
 // SEO: Atualizar Titulo da Pagina dinamicamente
 router.beforeEach((to, from, next) => {
     document.title = to.meta.title || 'SM Glamour Store | Beleza & Autocuidado'
+
+    // Admin route guard
+    if (to.meta.requiresAdmin) {
+        const isAuthenticated = sessionStorage.getItem('smglamour_admin') === 'true'
+        if (!isAuthenticated) {
+            return next({ name: 'admin-login' })
+        }
+    }
+
     next()
 })
 
 export default router
-
