@@ -19,7 +19,10 @@ const addToCart = (event) => {
 </script>
 
 <template>
-  <a :href="'/produto/' + product.slug" class="group relative bg-white border border-glamour-soft/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full hover:-translate-y-1">
+  <RouterLink
+    :to="{ name: 'produto_detalhe', params: { slug: product.slug || product.id } }"
+    class="group relative bg-white border border-glamour-soft/30 rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col h-full hover:-translate-y-1"
+  >
     <!-- Image Container with Aspect Ratio -->
     <div class="relative w-full pt-[100%] bg-stone-100 overflow-hidden">
       <!-- Tag / Badge -->
@@ -63,5 +66,5 @@ const addToCart = (event) => {
         </button>
       </div>
     </div>
-  </a>
+  </RouterLink>
 </template>

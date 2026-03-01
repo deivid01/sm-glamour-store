@@ -1,10 +1,8 @@
 <script setup>
 import { ref, onMounted } from 'vue'
-import { RouterLink, useRouter } from 'vue-router'
 import axios from 'axios'
 import ProductCard from '../components/ProductCard.vue'
 
-const router = useRouter()
 const featuredProducts = ref([])
 const loading = ref(true)
 

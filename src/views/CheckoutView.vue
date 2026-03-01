@@ -1,4 +1,4 @@
-<script setup>
+﻿<script setup>
 import { useCartStore } from '../stores/cart'
 import { ref, computed, watch } from 'vue'
 import { useRouter } from 'vue-router'
@@ -22,26 +22,33 @@ const loadingShipping = ref(false)
 const loadingCheckout = ref(false)
 
 const calculateShipping = async () => {
-    if (form.value.cep.length < 8) return
+    const normalizedCep = form.value.cep.replace(/\D/g, '')
+    if (normalizedCep.length < 8) return
+
     loadingShipping.value = true
     try {
-        const response = await axios.post(`${import.meta.env.VITE_API_BASE_URL}/api/integrations/shipping/calculate/`, {
-            cep: form.value.cep,
-            produtos: cartStore.items.map(i => ({ id: i.id, quantidade: i.quantity }))
+        const response = await axios.post('/api/integrations/shipping/calculate/', {
+            to_postal_code: normalizedCep,
+            products: cartStore.items.map(i => ({ id: i.id, quantity: i.quantity }))
         })
-        
-        // Tratar resposta que pode ser array ou objeto de fallback
+
         if (Array.isArray(response.data)) {
-            shippingOptions.value = response.data
+            shippingOptions.value = response.data.map(opt => ({
+                id: opt.id,
+                nome: opt.nome || opt.name || 'Frete',
+                valor: opt.valor || opt.price || '0.00',
+                prazo_dias: opt.prazo_dias || opt.delivery_time || 0
+            }))
         } else {
-            // Transformar o fallback (pac/sedex) em array se necessário
-            shippingOptions.value = Object.keys(response.data).map(key => ({
+            shippingOptions.value = Object.keys(response.data || {}).map(key => ({
                 id: key,
                 nome: key.toUpperCase(),
                 valor: response.data[key].valor,
                 prazo_dias: response.data[key].prazo_dias
             }))
         }
+
+        selectedShipping.value = null
     } catch (error) {
         console.error('Erro frete checkout:', error)
     } finally {
@@ -49,9 +56,8 @@ const calculateShipping = async () => {
     }
 }
 
-// Observar CEP para calcular frete automaticamente
 watch(() => form.value.cep, (newCep) => {
-    if (newCep.length >= 8) {
+    if (newCep.replace(/\D/g, '').length >= 8) {
         calculateShipping()
     }
 })
@@ -69,13 +75,11 @@ const handleCheckout = async () => {
         alert("Por favor, selecione uma opção de frete.")
         return
     }
-    
+
     loadingCheckout.value = true
     try {
-        // Aqui enviaríamos para um endpoint do Django que cria o pedido e envia para a Olist
-        // Por enquanto, simulamos o sucesso após a integração de frete
         await new Promise(resolve => setTimeout(resolve, 1500))
-        
+
         alert("Pedido recebido! Integrando com Olist ERP...")
         cartStore.clearCart()
         router.push('/')
@@ -92,16 +96,16 @@ const handleCheckout = async () => {
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       
       <div v-if="cartStore.cartCount === 0" class="text-center py-20 bg-white rounded-3xl border border-glamour-soft/30 shadow-sm max-w-2xl mx-auto">
-        <h2 class="text-3xl font-serif text-stone-800 mb-4">Sua sacola está vazia.</h2>
-        <p class="text-stone-500 font-light mb-8">Adicione os produtos de autocuidado ideais para você e eles aparecerão aqui.</p>
+        <h2 class="text-3xl font-serif text-stone-800 mb-4">Sua sacola estÃ¡ vazia.</h2>
+        <p class="text-stone-500 font-light mb-8">Adicione os produtos de autocuidado ideais para vocÃª e eles aparecerÃ£o aqui.</p>
         <RouterLink to="/catalogo" class="bg-glamour-primary hover:bg-stone-900 text-white px-8 py-3 rounded-full font-medium tracking-widest uppercase text-sm shadow-xl shadow-glamour-primary/30 transition-all duration-300">
-            Ir para Catálogo
+            Ir para CatÃ¡logo
         </RouterLink>
       </div>
 
       <div v-else class="grid grid-cols-1 lg:grid-cols-12 gap-10">
         
-        <!-- Formulário Checkout -->
+        <!-- FormulÃ¡rio Checkout -->
         <div class="lg:col-span-7 bg-white p-8 md:p-10 rounded-3xl shadow-sm border border-stone-200">
             <h2 class="text-2xl font-serif text-stone-900 mb-8 border-b border-glamour-soft pb-4">Finalize seu Pedido</h2>
             
@@ -128,19 +132,19 @@ const handleCheckout = async () => {
 
                 <!-- Entrega -->
                 <section>
-                    <h3 class="text-glamour-gold font-bold tracking-widest uppercase text-xs mb-4">2. Endereço & Frete</h3>
+                    <h3 class="text-glamour-gold font-bold tracking-widest uppercase text-xs mb-4">2. EndereÃ§o & Frete</h3>
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 mb-6">
                         <div class="col-span-1">
                             <label class="block text-sm font-medium text-stone-700 mb-1">CEP</label>
                             <input v-model="form.cep" type="text" required class="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-2 focus:outline-none focus:border-glamour-primary focus:ring-1 focus:ring-glamour-primary transition-all">
                         </div>
                         <div class="col-span-1 sm:col-span-2">
-                            <label class="block text-sm font-medium text-stone-700 mb-1">Endereço</label>
+                            <label class="block text-sm font-medium text-stone-700 mb-1">EndereÃ§o</label>
                             <input v-model="form.endereco" type="text" required class="w-full bg-stone-50 border border-stone-200 rounded-lg px-4 py-2 focus:outline-none focus:border-glamour-primary focus:ring-1 focus:ring-glamour-primary transition-all">
                         </div>
                     </div>
 
-                    <!-- Opções de Frete -->
+                    <!-- OpÃ§Ãµes de Frete -->
                     <div v-if="loadingShipping" class="flex items-center gap-3 text-stone-400 text-sm">
                         <div class="animate-spin h-4 w-4 border-2 border-glamour-primary border-t-transparent rounded-full"></div>
                         Calculando frete real...
@@ -150,7 +154,7 @@ const handleCheckout = async () => {
                             <input type="radio" :value="opt" v-model="selectedShipping" class="accent-glamour-primary h-4 w-4">
                             <div class="ml-4 flex-grow">
                                 <span class="block font-medium text-stone-800">{{ opt.nome }}</span>
-                                <span class="text-xs text-stone-500">Entrega em até {{ opt.prazo_dias }} dias úteis</span>
+                                <span class="text-xs text-stone-500">Entrega em atÃ© {{ opt.prazo_dias }} dias Ãºteis</span>
                             </div>
                             <span class="font-bold text-glamour-primary">R$ {{ opt.valor }}</span>
                         </label>
@@ -219,3 +223,4 @@ const handleCheckout = async () => {
   scrollbar-width: none;
 }
 </style>
+

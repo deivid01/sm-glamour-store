@@ -1,5 +1,5 @@
 <script setup>
-import { ref, onMounted, computed } from 'vue'
+import { ref, onMounted } from 'vue'
 import { useRoute, useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 import axios from 'axios'
@@ -14,8 +14,7 @@ const activeImage = ref('')
 const cep = ref('')
 const shippingOptions = ref([])
 const loadingShipping = ref(false)
-const shippingError = ref('') // Added this line as per the provided code edit
-const postalCode = ref('') // Added this line as per the provided code edit
+const shippingError = ref('')
 
 const fetchProduct = async () => {
   try {
@@ -42,18 +41,30 @@ const fetchProduct = async () => {
 }
 
 const calculateShipping = async () => {
-  if (!postalCode.value || postalCode.value.length < 8) return
+  const normalizedCep = cep.value.replace(/\D/g, '')
+  if (!normalizedCep || normalizedCep.length < 8) {
+    shippingError.value = 'Informe um CEP válido com 8 dígitos.'
+    return
+  }
+
   loadingShipping.value = true
-  shippingError.value = '' // Added this line as per the provided code edit
+  shippingError.value = ''
+
   try {
     const response = await axios.post('/api/integrations/shipping/calculate/', {
-      cep: cep.value,
-      produtos: [{ id: product.value.id, quantidade: quantity.value }]
+      to_postal_code: normalizedCep,
+      products: [{ id: product.value.id, quantity: quantity.value }]
     })
-    shippingOptions.value = response.data
+
+    shippingOptions.value = (response.data || []).map(opt => ({
+      id: opt.id,
+      nome: opt.nome || opt.name || 'Frete',
+      valor: opt.valor || opt.price || '0.00',
+      prazo_dias: opt.prazo_dias || opt.delivery_time || 0
+    }))
   } catch (error) {
     console.error('Erro ao calcular frete:', error)
-    shippingError.value = 'Erro ao calcular frete. Verifique o CEP.' // Added this line as per the provided code edit
+    shippingError.value = 'Erro ao calcular frete. Verifique o CEP.'
   } finally {
     loadingShipping.value = false
   }
@@ -208,6 +219,7 @@ const addToCartAndCheckout = () => {
                         </div>
                     </div>
                 </div>
+                <p v-else-if="shippingError" class="mt-3 text-xs text-red-500">{{ shippingError }}</p>
                 </div>
             </div>
 

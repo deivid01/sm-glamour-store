@@ -1,5 +1,5 @@
-<script setup>
-import { ref, computed } from 'vue'
+﻿<script setup>
+import { ref } from 'vue'
 import { RouterLink, useRouter } from 'vue-router'
 import { useCartStore } from '../stores/cart'
 
@@ -18,19 +18,17 @@ const goToCheckout = () => {
   <nav class="bg-white/80 backdrop-blur-md sticky top-0 z-[100] border-b border-glamour-soft shadow-sm">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
       <div class="flex justify-between items-center h-16">
-        <!-- Logo -->
         <div class="flex-shrink-0 flex items-center">
-          <a href="/" class="flex items-center">
+          <RouterLink to="/" class="flex items-center">
             <img src="/logos/1.jpeg" alt="SM Glamour Logo" class="h-12 w-auto object-contain hover:scale-105 transition-transform duration-300">
-          </a>
+          </RouterLink>
         </div>
 
-        <!-- Desktop Menu -->
         <div class="hidden md:ml-6 md:flex md:space-x-8 items-center">
-          <a href="/" class="text-stone-600 hover:text-glamour-primary transition-colors px-3 py-2 text-sm font-medium uppercase tracking-wider">Início</a>
-          <a href="/catalogo" class="text-stone-600 hover:text-glamour-primary transition-colors px-3 py-2 text-sm font-medium uppercase tracking-wider">Catálogo</a>
-          <a href="/sobre" class="text-stone-600 hover:text-glamour-primary transition-colors px-3 py-2 text-sm font-medium uppercase tracking-wider">Sobre Nós</a>
-          
+          <RouterLink to="/" class="text-stone-600 hover:text-glamour-primary transition-colors px-3 py-2 text-sm font-medium uppercase tracking-wider">Inicio</RouterLink>
+          <RouterLink to="/catalogo" class="text-stone-600 hover:text-glamour-primary transition-colors px-3 py-2 text-sm font-medium uppercase tracking-wider">Catalogo</RouterLink>
+          <RouterLink to="/sobre" class="text-stone-600 hover:text-glamour-primary transition-colors px-3 py-2 text-sm font-medium uppercase tracking-wider">Sobre Nos</RouterLink>
+
           <button @click="isCartOpen = true" class="relative p-2 text-stone-600 hover:text-glamour-primary transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
               <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 10.5V6a3.75 3.75 0 10-7.5 0v4.5m11.356-1.993l1.263 12c.07.665-.45 1.243-1.119 1.243H4.25a1.125 1.125 0 01-1.12-1.243l1.264-12A1.125 1.125 0 015.513 7.5h12.974c.576 0 1.059.435 1.119 1.007zM8.625 10.5a.375.375 0 11-.75 0 .375.375 0 01.75 0zm7.5 0a.375.375 0 11-.75 0 .375.375 0 01.75 0z" />
@@ -39,7 +37,6 @@ const goToCheckout = () => {
           </button>
         </div>
 
-        <!-- Mobile menu button -->
         <div class="flex items-center md:hidden gap-4">
           <button @click="isCartOpen = true" class="relative p-2 text-stone-600 hover:text-glamour-primary transition-colors">
             <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
@@ -47,7 +44,7 @@ const goToCheckout = () => {
             </svg>
             <span v-if="cartStore.cartCount > 0" class="absolute top-0 right-0 inline-flex items-center justify-center px-1.5 py-0.5 text-xs font-bold leading-none text-white transform translate-x-1/4 -translate-y-1/4 bg-glamour-gold rounded-full">{{ cartStore.cartCount }}</span>
           </button>
-          
+
           <button @click="isMenuOpen = !isMenuOpen" class="inline-flex items-center justify-center p-2 rounded-md text-stone-600 hover:text-glamour-primary hover:bg-glamour-soft/30 focus:outline-none transition-colors">
             <svg v-if="!isMenuOpen" class="block h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16M4 18h16" />
@@ -60,16 +57,14 @@ const goToCheckout = () => {
       </div>
     </div>
 
-    <!-- Mobile Menu -->
     <div v-show="isMenuOpen" class="md:hidden border-t border-glamour-soft bg-white/95 backdrop-blur-md absolute w-full shadow-lg">
       <div class="px-2 pt-2 pb-3 space-y-1 sm:px-3 text-center">
-        <a href="/" @click="isMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-glamour-primary hover:bg-glamour-soft/50 transition-colors uppercase tracking-widest">Início</a>
-        <a href="/catalogo" @click="isMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-stone-600 hover:text-glamour-primary hover:bg-glamour-soft/50 transition-colors uppercase tracking-widest">Catálogo</a>
-        <a href="/sobre" @click="isMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-stone-600 hover:text-glamour-primary hover:bg-glamour-soft/50 transition-colors uppercase tracking-widest">Sobre Nós</a>
+        <RouterLink to="/" @click="isMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-glamour-primary hover:bg-glamour-soft/50 transition-colors uppercase tracking-widest">Inicio</RouterLink>
+        <RouterLink to="/catalogo" @click="isMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-stone-600 hover:text-glamour-primary hover:bg-glamour-soft/50 transition-colors uppercase tracking-widest">Catalogo</RouterLink>
+        <RouterLink to="/sobre" @click="isMenuOpen = false" class="block px-3 py-3 rounded-md text-base font-medium text-stone-600 hover:text-glamour-primary hover:bg-glamour-soft/50 transition-colors uppercase tracking-widest">Sobre Nos</RouterLink>
       </div>
     </div>
 
-    <!-- Side Cart Overlay -->
     <div v-show="isCartOpen" class="fixed inset-0 z-[200] overflow-hidden" aria-labelledby="slide-over-title" role="dialog" aria-modal="true">
       <div class="absolute inset-0 overflow-hidden">
         <div class="absolute inset-0 bg-stone-900/60 backdrop-blur-sm transition-opacity" @click="isCartOpen = false"></div>
@@ -100,7 +95,7 @@ const goToCheckout = () => {
                     </div>
                     <p class="text-stone-500 font-light text-sm">Sua sacola parece estar vazia.</p>
                   </div>
-                  
+
                   <div class="flow-root" v-else>
                     <ul role="list" class="-my-6 divide-y divide-stone-200">
                       <li v-for="item in cartStore.items" :key="item.id" class="flex py-6">
@@ -111,7 +106,7 @@ const goToCheckout = () => {
                         <div class="ml-4 flex flex-1 flex-col">
                           <div>
                             <div class="flex justify-between text-sm md:text-base font-medium text-stone-900">
-                              <h3 class="line-clamp-2 pr-4"><a href="#">{{ item.name }}</a></h3>
+                              <h3 class="line-clamp-2 pr-4">{{ item.name }}</h3>
                               <p class="ml-4 whitespace-nowrap">R$ {{ (item.price * item.quantity).toFixed(2) }}</p>
                             </div>
                             <p class="mt-1 text-xs text-glamour-gold uppercase tracking-wider">{{ item.category }}</p>

@@ -5,7 +5,7 @@
         
         <!-- Brand -->
         <div class="flex flex-col items-center md:items-start space-y-4">
-          <a href="#" class="text-2xl font-serif font-bold text-white flex items-center gap-2">
+          <a href="/" class="text-2xl font-serif font-bold text-white flex items-center gap-2">
             <span class="text-glamour-gold text-3xl">M</span>
             <div class="flex flex-col leading-none">
               <span class="tracking-widest">SM</span>
@@ -21,10 +21,10 @@
         <div class="flex flex-col space-y-4 items-center md:items-start">
           <h3 class="text-white font-serif tracking-wider uppercase text-sm border-b border-glamour-primary/50 pb-2 mb-2 inline-block">Links Rápidos</h3>
           <ul class="space-y-2 text-sm font-light">
-            <li><a href="#" class="hover:text-glamour-primary transition-colors">Produtos</a></li>
-            <li><a href="#" class="hover:text-glamour-primary transition-colors">Novidades</a></li>
-            <li><a href="#" class="hover:text-glamour-primary transition-colors">Mais Vendidos</a></li>
-            <li><a href="#" class="hover:text-glamour-primary transition-colors">Fale Conosco</a></li>
+            <li><a href="/catalogo" class="hover:text-glamour-primary transition-colors">Produtos</a></li>
+            <li><a href="/catalogo" class="hover:text-glamour-primary transition-colors">Novidades</a></li>
+            <li><a href="/catalogo" class="hover:text-glamour-primary transition-colors">Mais Vendidos</a></li>
+            <li><a href="https://wa.me/5517996432262" target="_blank" rel="noopener noreferrer" class="hover:text-glamour-primary transition-colors">Fale Conosco</a></li>
           </ul>
         </div>
 
@@ -32,7 +32,7 @@
         <div class="flex flex-col space-y-4 items-center md:items-start">
           <h3 class="text-white font-serif tracking-wider uppercase text-sm border-b border-glamour-primary/50 pb-2 mb-2 inline-block">Atendimento</h3>
           <ul class="space-y-2 text-sm font-light text-center md:text-left">
-            <li>WhatsApp: <a href="https://wa.me/5517996432262" target="_blank" class="hover:text-glamour-gold transition-colors">+55 17 99643-2262</a></li>
+            <li>WhatsApp: <a href="https://wa.me/5517996432262" target="_blank" rel="noopener noreferrer" class="hover:text-glamour-gold transition-colors">+55 17 99643-2262</a></li>
             <li>Email: <a href="mailto:smglamourstorenh@gmail.com" class="hover:text-glamour-gold transition-colors">smglamourstorenh@gmail.com</a></li>
             <li class="pt-4 flex gap-4 justify-center md:justify-start">
               <a href="#" class="w-10 h-10 rounded-full bg-stone-800 flex items-center justify-center hover:bg-glamour-primary hover:text-white transition-all text-glamour-gold">
