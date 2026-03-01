@@ -4,6 +4,7 @@ import CatalogoView from '../views/CatalogoView.vue'
 import ProdutoView from '../views/ProdutoView.vue'
 import CheckoutView from '../views/CheckoutView.vue'
 import SobreView from '../views/SobreView.vue'
+import AdminView from '../views/AdminView.vue'
 
 const router = createRouter({
     history: createWebHistory(import.meta.env.BASE_URL),
@@ -37,6 +38,12 @@ const router = createRouter({
             name: 'sobre',
             component: SobreView,
             meta: { title: 'Sobre Nós | SM Glamour Store' }
+        },
+        {
+            path: '/admin',
+            name: 'admin',
+            component: AdminView,
+            meta: { title: 'Painel Admin | SM Glamour Store' }
         }
     ],
     scrollBehavior(to, from, savedPosition) {

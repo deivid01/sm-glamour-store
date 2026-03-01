@@ -13,26 +13,30 @@
     "postinstall": "prisma generate"
   },
   "dependencies": {
-    "axios": "^1.13.6",
-    "pinia": "^3.0.4",
-    "vue": "^3.5.25",
-    "vue-router": "^4.6.4",
     "@prisma/client": "^5.22.0",
+    "axios": "^1.13.6",
     "cors": "^2.8.5",
     "dotenv": "^16.4.7",
-    "express": "^4.21.2"
+    "express": "^4.21.2",
+    "multer": "^2.1.0",
+    "node-cron": "^4.2.1",
+    "pinia": "^3.0.4",
+    "vue": "^3.5.25",
+    "vue-router": "^4.6.4"
   },
   "devDependencies": {
+    "@types/cors": "^2.8.17",
+    "@types/express": "^5.0.0",
+    "@types/multer": "^2.0.0",
+    "@types/node": "^22.13.4",
+    "@types/node-cron": "^3.0.11",
     "@vitejs/plugin-vue": "^6.0.2",
     "autoprefixer": "^10.4.27",
     "postcss": "^8.5.6",
-    "tailwindcss": "^3.4.19",
-    "vite": "^7.3.1",
-    "@types/cors": "^2.8.17",
-    "@types/express": "^5.0.0",
-    "@types/node": "^22.13.4",
     "prisma": "^5.22.0",
+    "tailwindcss": "^3.4.19",
     "ts-node": "^10.9.2",
-    "typescript": "^5.7.3"
+    "typescript": "^5.7.3",
+    "vite": "^7.3.1"
   }
 }

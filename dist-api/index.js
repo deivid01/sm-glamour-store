@@ -3,6 +3,9 @@ import express from 'express';
 import cors from 'cors';
 import axios from 'axios';
 import path from 'path';
+import fs from 'fs';
+import multer from 'multer';
+import cron from 'node-cron';
 const DEFAULT_CATEGORY_NAME = 'Sem categoria';
 const DEFAULT_CATEGORY_SLUG = 'sem-categoria';
 const OLIST_DEFAULT_BASE_URL = 'https://partners-api.olist.com/v1';
@@ -617,15 +620,85 @@ apiRouter.post('/integrations/shipping/calculate', async (req, res) => {
         res.status(500).json({ detail: 'Error simulating shipping calculation' });
     }
 });
+// --- ADMIN IMAGE UPLOAD ---
+const storage = multer.diskStorage({
+    destination: (_req, _file, cb) => {
+        const dir = path.join(process.cwd(), 'uploads');
+        if (!fs.existsSync(dir))
+            fs.mkdirSync(dir, { recursive: true });
+        cb(null, dir);
+    },
+    filename: (_req, file, cb) => {
+        const ext = path.extname(file.originalname);
+        const name = `${Date.now()}-${Math.round(Math.random() * 1e6)}${ext}`;
+        cb(null, name);
+    }
+});
+const upload = multer({ storage, limits: { fileSize: 10 * 1024 * 1024 } });
+// POST /api/admin/produtos/:id/imagem — upload image for a product
+apiRouter.post('/admin/produtos/:id/imagem', upload.single('imagem'), async (req, res) => {
+    try {
+        const id = BigInt(String(req.params.id));
+        if (!req.file)
+            return res.status(400).json({ detail: 'Nenhum arquivo enviado.' });
+        const imagemUrl = `/uploads/${req.file.filename}`;
+        await prisma.products_produto.update({
+            where: { id },
+            data: { imagem_url: imagemUrl }
+        });
+        res.json({ success: true, imagem_url: imagemUrl });
+    }
+    catch (error) {
+        console.error('Error uploading image:', error);
+        res.status(500).json({ detail: 'Erro ao fazer upload da imagem.' });
+    }
+});
+// GET /api/admin/produtos — list all products for admin
+apiRouter.get('/admin/produtos', async (_req, res) => {
+    try {
+        const produtos = await prisma.products_produto.findMany({
+            include: { products_categoria: true },
+            orderBy: { atualizado_em: 'desc' }
+        });
+        res.json(produtos.map(formatProduto));
+    }
+    catch (error) {
+        console.error('Error fetching admin produtos:', error);
+        res.status(500).json({ detail: 'Internal server error' });
+    }
+});
 app.use('/api', apiRouter);
 // --- RENDER.COM STATIC FRONTEND ---
-// Serve the compiled Vite Vue.js application
 const frontendDist = path.join(process.cwd(), 'dist');
+// Serve uploaded product images from /uploads directory
+const uploadsDir = path.join(process.cwd(), 'uploads');
+if (!fs.existsSync(uploadsDir))
+    fs.mkdirSync(uploadsDir, { recursive: true });
+app.use('/uploads', express.static(uploadsDir));
+// Serve the compiled Vite Vue.js application
 app.use(express.static(frontendDist));
 // Catch-all route to serve index.html for Vue Router (History Mode)
 app.get('*', (req, res) => {
     res.sendFile(path.join(frontendDist, 'index.html'));
 });
+// --- DAILY OLIST CRON JOB ---
+// Runs every day at 03:00 AM (server time)
+if (hasOlistConfig) {
+    cron.schedule('0 3 * * *', async () => {
+        console.log('[Cron] Starting daily Olist sync...');
+        try {
+            const summary = await runOlistSync();
+            console.log(`[Cron] Daily Olist sync completed: upserted=${summary.upserted} fetched=${summary.fetched} skipped=${summary.skipped}`);
+        }
+        catch (err) {
+            console.error('[Cron] Daily Olist sync failed:', err);
+        }
+    });
+    console.log('[Cron] Daily Olist sync scheduled at 03:00 AM.');
+}
+else {
+    console.warn('[Cron] Olist integration not configured - daily sync skipped.');
+}
 // Render passes the PORT environment variable dynamically
 app.listen(port, () => {
     console.log(`SM Glamour Monorepo (Node.js + Vue) is running on port ${port}`);
