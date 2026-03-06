@@ -11,5 +11,11 @@ services:
         sync: false
       - key: TINY_TOKEN
         sync: false
+      - key: MP_ACCESS_TOKEN
+        sync: false
+      - key: MP_PUBLIC_KEY
+        sync: false
+      - key: APP_URL
+        value: "https://sm-glamour-store.onrender.com"
       - key: NODE_VERSION
         value: "20.x"

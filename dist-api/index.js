@@ -6,6 +6,7 @@ import path from 'path';
 import fs from 'fs';
 import multer from 'multer';
 import cron from 'node-cron';
+import { MercadoPagoConfig, Preference, Payment } from 'mercadopago';
 const DEFAULT_CATEGORY_NAME = 'Sem categoria';
 const DEFAULT_CATEGORY_SLUG = 'sem-categoria';
 const OLIST_DEFAULT_BASE_URL = 'https://partners-api.olist.com/v1';
@@ -127,6 +128,13 @@ const buildPrismaClient = () => {
         }
     });
 };
+// --- MERCADO PAGO ---
+const mpAccessToken = process.env.MP_ACCESS_TOKEN ?? '';
+const mpEnabled = mpAccessToken.length > 0;
+// Shared config object — MercadoPagoConfig is NOT a constructor (no `new`), just a class
+const mpConfig = new MercadoPagoConfig({ accessToken: mpAccessToken });
+if (mpEnabled)
+    console.log('[MP] Mercado Pago configurado.');
 const getDatabaseErrorDetail = (error) => {
     if (!(error instanceof Error))
         return null;
@@ -468,6 +476,53 @@ apiRouter.post('/integrations/olist/sync', async (req, res) => {
         });
     }
 });
+// --- DESTAQUES (Bestsellers curated by admin) ---
+apiRouter.get('/produtos/destaques', async (_req, res) => {
+    try {
+        // First try products marked as destaque
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        let destaques = await prisma.products_produto.findMany({
+            where: { destaque: true },
+            include: { products_categoria: true },
+            orderBy: { atualizado_em: 'desc' },
+            take: 10
+        });
+        // Fallback: if none marked, return top-stocked products
+        if (destaques.length === 0) {
+            destaques = await prisma.products_produto.findMany({
+                include: { products_categoria: true },
+                orderBy: { estoque: 'desc' },
+                take: 8
+            });
+        }
+        res.json(destaques.map(formatProduto));
+    }
+    catch (error) {
+        console.error('Error fetching destaques:', error);
+        const detail = getDatabaseErrorDetail(error);
+        if (detail)
+            return res.status(503).json({ detail });
+        res.status(500).json({ detail: 'Internal server error' });
+    }
+});
+// PATCH /api/admin/produtos/:id/destaque — toggle bestseller flag
+apiRouter.patch('/admin/produtos/:id/destaque', async (req, res) => {
+    try {
+        const id = BigInt(String(req.params.id));
+        const body = (req.body ?? {});
+        const destaque = typeof body.destaque === 'boolean' ? body.destaque : true;
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        const updated = await prisma.products_produto.update({
+            where: { id },
+            data: { destaque }
+        });
+        res.json({ success: true, destaque: updated.destaque });
+    }
+    catch (error) {
+        console.error('Error toggling destaque:', error);
+        res.status(500).json({ detail: 'Erro ao atualizar destaque.' });
+    }
+});
 // --- PRODUCTS ---
 apiRouter.get('/produtos', async (req, res) => {
     try {
@@ -618,6 +673,101 @@ apiRouter.post('/integrations/shipping/calculate', async (req, res) => {
     catch (error) {
         console.error('Error calculating shipping:', error);
         res.status(500).json({ detail: 'Error simulating shipping calculation' });
+    }
+});
+// --- MERCADO PAGO PAYMENT ROUTES ---
+// POST /api/pagamentos/preferencia — creates a MP Preference and returns init_point and preference_id
+apiRouter.post('/pagamentos/preferencia', async (req, res) => {
+    if (!mpEnabled) {
+        return res.status(503).json({ detail: 'Gateway de pagamento não configurado.' });
+    }
+    try {
+        const { items, payer, back_urls, shipping } = req.body;
+        if (!items || items.length === 0) {
+            return res.status(400).json({ detail: 'Carrinho vazio.' });
+        }
+        const preference = new Preference(mpConfig);
+        const result = await preference.create({
+            body: {
+                items: items.map(item => ({
+                    id: item.id,
+                    title: item.title,
+                    quantity: item.quantity,
+                    unit_price: item.unit_price,
+                    currency_id: item.currency_id ?? 'BRL'
+                })),
+                payer: payer ? {
+                    name: payer.name,
+                    email: payer.email
+                } : undefined,
+                payment_methods: {
+                    installments: 12,
+                    excluded_payment_types: []
+                },
+                shipments: shipping ? {
+                    cost: shipping.cost ?? 0,
+                    mode: 'not_specified'
+                } : undefined,
+                back_urls: {
+                    success: back_urls?.success ?? `${req.headers.origin ?? ''}/checkout/sucesso`,
+                    failure: back_urls?.failure ?? `${req.headers.origin ?? ''}/checkout/falha`,
+                    pending: back_urls?.pending ?? `${req.headers.origin ?? ''}/checkout/pendente`
+                },
+                auto_return: 'all',
+                notification_url: `${process.env.APP_URL ?? req.headers.origin ?? ''}/api/pagamentos/webhook`,
+                statement_descriptor: 'SM Glamour Store'
+            }
+        });
+        res.json({
+            preference_id: result.id,
+            init_point: result.init_point,
+            sandbox_init_point: result.sandbox_init_point
+        });
+    }
+    catch (error) {
+        console.error('Error creating MP preference:', error);
+        res.status(500).json({ detail: 'Erro ao criar preferência de pagamento.' });
+    }
+});
+// GET /api/pagamentos/:paymentId/status — check payment status by MP payment ID
+apiRouter.get('/pagamentos/:paymentId/status', async (req, res) => {
+    if (!mpEnabled) {
+        return res.status(503).json({ detail: 'Gateway de pagamento não configurado.' });
+    }
+    try {
+        const paymentId = String(req.params.paymentId);
+        const payment = new Payment(mpConfig);
+        const result = await payment.get({ id: paymentId });
+        res.json({
+            id: result.id,
+            status: result.status,
+            status_detail: result.status_detail,
+            payment_method_id: result.payment_method_id,
+            payment_type_id: result.payment_type_id,
+            transaction_amount: result.transaction_amount,
+            payer: result.payer
+        });
+    }
+    catch (error) {
+        console.error('Error fetching payment status:', error);
+        res.status(500).json({ detail: 'Erro ao consultar status do pagamento.' });
+    }
+});
+// POST /api/pagamentos/webhook — Mercado Pago IPN webhook
+apiRouter.post('/pagamentos/webhook', async (req, res) => {
+    try {
+        const { type, data } = req.body;
+        if (type === 'payment' && data?.id) {
+            const payment = new Payment(mpConfig);
+            const result = await payment.get({ id: data.id });
+            console.log(`[MP Webhook] Payment ${data.id} → status: ${result.status}`);
+            // In the future: update order in DB based on status
+        }
+        res.status(200).json({ received: true });
+    }
+    catch (error) {
+        console.error('[MP Webhook] Error:', error);
+        res.status(200).json({ received: true }); // Always 200 so MP doesn't retry
     }
 });
 // --- ADMIN IMAGE UPLOAD ---
